@@ -9,103 +9,86 @@ docker-compose up --build
 
 This repository contains a complete demo web application that maps grazing conditions for cattle on the Lorella Springs (NT, Australia) property using Sentinel-2-like synthetic data, a baseline RandomForest classifier, and a React + Leaflet frontend.
 
-## Key features:
+Key features:
 
-FastAPI backend serving inference endpoints, raster tiles, and historical results.
+* FastAPI backend serving inference endpoints, raster tiles, and historical results.
+* Baseline ML pipeline (RandomForest) trained on per-pixel spectral bands + indices.
+* Monthly pipeline runner to fetch latest tiles, run inference, and store timestamped outputs.
+* React frontend displaying base map, Sentinel-2 imagery, and classification overlay with historical months selector.
+* Demo mode with synthetic GeoTIFF data generator so it runs offline.
+* Tests for indices, feature extraction, and demo pipeline.
 
-Baseline ML pipeline (RandomForest) trained on per-pixel spectral bands + indices.
+### Quick walk-through (offline demo)
 
-Monthly pipeline runner to fetch latest tiles, run inference, and store timestamped outputs.
-
-React frontend displaying base map, Sentinel-2 imagery, and classification overlay with historical months selector.
-
-Demo mode with synthetic GeoTIFF data generator so it runs offline.
-
-Tests for indices, feature extraction, and demo pipeline.
-
-Quick walk-through (offline demo)
-
-Build and start everything with Docker Compose:
-
+1. Build and start everything with Docker Compose:
+```
 docker-compose up --build
-
+```
 
 This builds three services:
 
-backend — FastAPI app (http://localhost:8000
+* `backend` — FastAPI app (http://localhost:8000
 )
 
-frontend — React app (http://localhost:3000
+* `frontend` — React app (http://localhost:3000
 )
 
-scheduler — Cron-like container that can run the monthly pipeline (runs a demo once at start)
+* `scheduler` — Cron-like container that can run the monthly pipeline (runs a demo once at start)
 
-Generate demo data (alternative to letting scheduler create it):
-
+2. Generate demo data (alternative to letting scheduler create it):
+```
 make demo-data
+```
 
-
-Train the demo model on synthetic data:
-
+3. Train the demo model on synthetic data:
+```
 make train-demo
+```
 
+This creates `backend/app/ml/model.joblib`.
 
-This creates backend/app/ml/model.joblib.
-
-Run the monthly pipeline manually (or the scheduler will run it once on startup):
-
+4. Run the monthly pipeline manually (or the scheduler will run it once on startup):
+```
 ./scheduler/run_monthly_pipeline.sh
+```
 
+This produces a timestamped folder under `storage/` with `imagery.tif`, `classification.tif`, and `summary.geojson`.
 
-This produces a timestamped folder under storage/ with imagery.tif, classification.tif, and summary.geojson.
-
-Open the frontend:
-
+5. Open the frontend:
+```
 http://localhost:3000
-
+```
 Use the dropdown to select historical months, toggle layers and opacity. Click on the map to see pixel attributes (date, NDVI, class probabilities).
 
-File layout
+### File layout
 
 See repository root for files. Notable files:
 
-demo/generate_sample_data.py — produces small Sentinel-like GeoTIFFs covering Lorella Springs.
+* `demo/generate_sample_data.py` — produces small Sentinel-like GeoTIFFs covering Lorella Springs.
+* `backend/app/ml/train_demo.py` — trains RandomForest on demo data.
+* `backend/app/infer.py` — functions for running inference and saving GeoTIFFs & summaries.
+* `backend/app/api.py` — FastAPI endpoints (list dates, start inference, serve tiles).
+* `frontend/src` — React + Leaflet SPA.
 
-backend/app/ml/train_demo.py — trains RandomForest on demo data.
+### Design notes and decisions
 
-backend/app/infer.py — functions for running inference and saving GeoTIFFs & summaries.
+**Why RandomForest + spectral indices?**
 
-backend/app/api.py — FastAPI endpoints (list dates, start inference, serve tiles).
+* Works well with limited labels and small tabular features.
+* Per-pixel spectral indices like NDVI/NDWI are strong correlates of vegetation health.
+* Fast to train and explainable; good baseline before moving to deep segmentation models.
 
-frontend/src — React + Leaflet SPA.
+**Next steps to improve**
 
-Design notes and decisions
+* Collect field truth (ground sampling) and richer labels.
+* Use patch-based deep learning (UNet-style) for spatial context.
+* Add temporal models (LSTM / TS models) for change detection.
+* Use higher resolution (Planet) for fine-grained pasture condition.
 
-Why RandomForest + spectral indices?
-
-Works well with limited labels and small tabular features.
-
-Per-pixel spectral indices like NDVI/NDWI are strong correlates of vegetation health.
-
-Fast to train and explainable; good baseline before moving to deep segmentation models.
-
-Next steps to improve
-
-Collect field truth (ground sampling) and richer labels.
-
-Use patch-based deep learning (UNet-style) for spatial context.
-
-Add temporal models (LSTM / TS models) for change detection.
-
-Use higher resolution (Planet) for fine-grained pasture condition.
-
-Data licensing and plug-in to real Sentinel-2
-
-Sentinel-2 data (Copernicus) are free under standard Copernicus terms.
-
-To plug in real data:
-
-Provide Copernicus Open Access Hub credentials via environment variables (see .env.example).
+### Data licensing and plug-in to real Sentinel-2
+* Sentinel-2 data (Copernicus) are free under standard Copernicus terms.
+* To plug in real data:
+ * Provide Copernicus Open Access Hub credentials via environment variables (see `.env.example`).
 
 backend/app/data/downloader.py contains placeholder code that uses sentinelsat — fill in credentials.
 
