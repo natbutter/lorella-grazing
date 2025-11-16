@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    volumes:
+      - ./backend/app:/app/app
+      - ./storage:/app/storage
+      - ./demo:/app/demo
+    env_file:
+      - .env.example
+    ports:
+      - "8000:8000"
+    command: ["./run_uvicorn.sh"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8000
+
+  scheduler:
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/app:/app/app
+      - ./storage:/app/storage
+      - ./demo:/app/demo
+    env_file:
+      - .env.example
+    # Runs the monthly pipeline script once and exits (or can be adjusted to cron)
+    command: ["/bin/sh", "-c", "/run_monthly_pipeline.sh"]
+

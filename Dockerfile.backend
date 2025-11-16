@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# system deps for rasterio
+RUN apt-get update && apt-get install -y \
+    build-essential gdal-bin libgdal-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY backend/app /app/app
+COPY demo /app/demo
+COPY storage /app/storage
+
+EXPOSE 8000
+
+CMD ["./run_uvicorn.sh"]
+

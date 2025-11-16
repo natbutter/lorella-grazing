@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+gunicorn
+rasterio
+rio-tiler
+geopandas
+shapely
+numpy
+scikit-learn
+joblib
+sentinelsat
+python-multipart
+pydantic
+pytest
+matplotlib
+more-itertools
+

@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lorella Springs (approx)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [137.3, -14.2],
+            [137.5, -14.2],
+            [137.5, -14.4],
+            [137.3, -14.4],
+            [137.3, -14.2]
+          ]
+        ]
+      }
+    }
+  ]
+}
+

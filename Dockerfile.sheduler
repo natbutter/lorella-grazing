@@ -1,0 +1,8 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY scheduler/run_monthly_pipeline.sh /run_monthly_pipeline.sh
+COPY backend/app /app/app
+COPY demo /app/demo
+RUN chmod +x /run_monthly_pipeline.sh
+CMD ["/run_monthly_pipeline.sh"]
+
