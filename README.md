@@ -89,66 +89,58 @@ See repository root for files. Notable files:
 * Sentinel-2 data (Copernicus) are free under standard Copernicus terms.
 * To plug in real data:
  * Provide Copernicus Open Access Hub credentials via environment variables (see `.env.example`).
+ * `backend/app/data/downloader.py` contains placeholder code that uses sentinelsat - fill in credentials.
+ * Real ingestion needs processing to L2A (SCL/cloud mask), and possibly Sentinel Hub integration for tiled access.
 
-backend/app/data/downloader.py contains placeholder code that uses sentinelsat — fill in credentials.
+## Running without Docker (developer)
 
-Real ingestion needs processing to L2A (SCL/cloud mask), and possibly Sentinel Hub integration for tiled access.
-
-Running without Docker (developer)
-
-Create a virtualenv and install backend requirements:
-
+1. Create a virtualenv and install backend requirements:
+```
 python -m venv venv
 source venv/bin/activate
 pip install -r backend/requirements.txt
+```
 
-
-Generate sample data, train, and run uvicorn:
-
+2. Generate sample data, train, and run uvicorn:
+```
 python demo/generate_sample_data.py
 python backend/app/ml/train_demo.py
 uvicorn backend.app.main:app --reload --port 8000
+```
 
-
-Install frontend deps and run:
-
+3. Install frontend deps and run:
+```
 cd frontend
 npm install
 npm start
+```
 
-Environment variables
+## Environment variables
 
-Create .env from .env.example and fill placeholders. Important variables:
+Create `.env` from `.env.example` and fill placeholders. Important variables:
 
-COPERNICUS_USER / COPERNICUS_PASS - (optional) for real Sentinel downloads
+* `COPERNICUS_USER` / `COPERNICUS_PASS` - (optional) for real Sentinel downloads
+* `BACKEND_HOST`, `BACKEND_PORT`
 
-BACKEND_HOST, BACKEND_PORT
-
-Tests
+## Tests
 
 Run tests:
-
+```
 make test
-
+```
 
 Tests use pytest and will run a demo pipeline in temporary folders.
 
-Security & privacy notes
+## Security & privacy notes
 
-This demo stores data locally in storage/. For production, secure storage (S3, access controls) is recommended.
-
-When using real data, ensure credentials are kept out of source control (use secrets manager).
-
-Consider costs for storage and processing when scaling.
+* This demo stores data locally in `storage/`. For production, secure storage (S3, access controls) is recommended.
+* When using real data, ensure credentials are kept out of source control (use secrets manager).
+* Consider costs for storage and processing when scaling.
 
 Make targets
 
-make build — build docker images
-
-make demo-data — generate sample data
-
-make train-demo — train model on demo data
-
-make run — start docker-compose
-
-make test — run tests
+* `make build` — build docker images
+* `make demo-data` — generate sample data
+* `make train-demo` — train model on demo data
+* `make run` — start docker-compose
+* `make test` — run tests
