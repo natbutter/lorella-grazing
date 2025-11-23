@@ -16,8 +16,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ../Dockerfile.frontend
+      context: .
+      dockerfile: Dockerfile.frontend
     ports:
       - "3000:3000"
     depends_on:
@@ -25,16 +25,16 @@ services:
     environment:
       - REACT_APP_BACKEND_URL=http://localhost:8000
 
-  scheduler:
-    build:
-      context: ./scheduler
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend/app:/app/app
-      - ./storage:/app/storage
-      - ./demo:/app/demo
-    env_file:
-      - .env.example
-    # Runs the monthly pipeline script once and exits (or can be adjusted to cron)
-    command: ["/bin/sh", "-c", "/run_monthly_pipeline.sh"]
+  # scheduler:
+  #   build:
+  #     context: .
+  #     dockerfile: scheduler/Dockerfile
+  #   volumes:
+  #     - ./backend/app:/app/app
+  #     - ./storage:/app/storage
+  #     - ./demo:/app/demo
+  #   env_file:
+  #     - .env.example
+  #   # Runs the monthly pipeline script once and exits (or can be adjusted to cron)
+  #   command: ["/bin/sh", "-c", "/run_monthly_pipeline.sh"]
 

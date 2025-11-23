@@ -14,6 +14,9 @@ COPY backend/app /app/app
 COPY demo /app/demo
 COPY storage /app/storage
 
+COPY backend/app/run_uvicorn.sh /app/run_uvicorn.sh
+RUN chmod +x /app/run_uvicorn.sh
+
 EXPOSE 8000
 
 CMD ["./run_uvicorn.sh"]
