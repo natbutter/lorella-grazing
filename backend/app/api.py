@@ -16,8 +16,8 @@ from pathlib import Path
 import os
 import logging
 from typing import Optional
-from rio_tiler.utils import array_to_image
-from rio_tiler.io import COGReader
+# from rio_tiler.utils import array_to_image
+# from rio_tiler.io import COGReader
 import numpy as np
 import io
 from PIL import Image

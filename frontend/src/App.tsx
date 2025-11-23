@@ -1,5 +1,5 @@
 import React from "react";
-import LeafletMap from "./LeafletMap";
+import LeafletMap from "./LeafletMap.tsx";
 
 export default function App() {
   return (
